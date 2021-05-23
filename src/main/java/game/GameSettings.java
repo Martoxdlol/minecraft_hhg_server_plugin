@@ -1,5 +1,6 @@
 package game;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 
 public class GameSettings {
@@ -15,7 +16,11 @@ public class GameSettings {
     public boolean teamPvp = false;
     public int timeOnPreGame = 0;
     public int initialTime = 0;
+    public int messagesInterval = 5; //Minutes
+    public int playerLives = 1;
+    public int countdown = 5;
     public World world;
+    private Location lobbyLocation = new Location(world,0,242,0);
     public GameSettings(){
 
     }
@@ -24,5 +29,10 @@ public class GameSettings {
         this.pactDuration = pactDuration;
         this.finalSize = finalSize;
         this.initialSize = initialSize;
+    }
+
+    public Location getLobbyLocation() {
+        lobbyLocation.setWorld(world);
+        return lobbyLocation;
     }
 }

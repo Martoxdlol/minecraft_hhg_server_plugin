@@ -8,7 +8,10 @@ public class GamePlayer {
     public Player player;
     Game game;
     public GameTeam team;
-    private boolean alive = true;
+
+    private int lives;
+
+    public int kills = 0;
 
     public GamePlayer(Game game, Player player){
         constructor(player, game);
@@ -23,16 +26,34 @@ public class GamePlayer {
         this.game = game;
     }
 
-    boolean isAlive(){
-        return alive;
+    public boolean isAlive(){
+        return lives > 0;
     }
 
-    public void setKilled(){
-        alive = false;
+    public void removeLive(int removeQuantity){
+        if(lives - removeQuantity > 0 && removeQuantity > 0){
+            lives -= removeQuantity;
+        }
+    }
+
+    public void kill(){
+
     }
 
     public UUID getUniqueId(){
         return player.getUniqueId();
+    }
+
+    public void addLives(int lives) {
+        this.lives += lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public int getLives() {
+        return lives;
     }
 
     Player getPlayer(){
