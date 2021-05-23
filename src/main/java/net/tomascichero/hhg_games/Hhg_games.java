@@ -1,8 +1,6 @@
 package net.tomascichero.hhg_games;
 
-import commands.ChangeGameSettings;
-import commands.ShowSettings;
-import commands.StartGameCommandExecutor;
+import commands.*;
 import game.Game;
 import game.GameSettings;
 import org.bukkit.Bukkit;
@@ -19,6 +17,11 @@ public final class Hhg_games extends JavaPlugin {
         this.getCommand("start_game").setExecutor(new StartGameCommandExecutor(game));
         this.getCommand("apply_settings").setExecutor(new ChangeGameSettings(game, gameSettings));
         this.getCommand("show_settings").setExecutor(new ShowSettings(gameSettings));
+        this.getCommand("add_team").setExecutor(new AddTeam(game));
+        this.getCommand("set_team").setExecutor(new SetTeam(game));
+        this.getCommand("team_color").setExecutor(new TeamColor(game));
+        this.getCommand("show_teams").setExecutor(new ShowTeams(game));
+        this.getCommand("add_player").setExecutor(new AddPlayer(game));
         game.applySettingsPreGame();
     }
 

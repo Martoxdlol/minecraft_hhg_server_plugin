@@ -1,4 +1,4 @@
-name: Hhg_games
+name: HuertoHungerGames
 version: ${project.version}
 main: net.tomascichero.hhg_games.Hhg_games
 api-version: 1.16
@@ -15,12 +15,25 @@ commands:
   show_settings:
     description: "Muestra las configuraciónes de la partida. (usar -broadcast para mostrarle a todos)"
     usage: /show_settings or /show_settings -broadcast
+  add_player:
+    description: Agrega un jugador al juego
+    usage: /add_player nombre
+  add_team:
+    description: Agrega un nuevo equipo
+    usage: /add_team Nombre del equipo
+  set_team:
+    description: Agrega un jugador a un equipo
+    usage: /set_team jugador equipo
+  team_color:
+    description: Cambia el color del equipo
+    usage: /team_color color nombre del equipo
+  show_teams:
+    description: Muestra los equipos y los integrantes
+    usage: /show_teams or /show_teams -broadcast
   stop_game:
     description: Detiene el juego
     usage: /stop_game
-  add_player:
-    description: Agrega un jugador a la partida unque ya haya iniciado
-    usage: /add_player [nombre]
+
   revive:
     description: Revive un jugador muerto en la partida
     usage: /revive [nombre]

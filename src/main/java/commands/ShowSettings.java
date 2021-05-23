@@ -14,11 +14,17 @@ public class ShowSettings implements CommandExecutor {
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         String message = getConfigMessage();
-        sender.sendMessage(message);
+        boolean broadcast = false;
         for(String arg : args){
-            if(arg.equals("-broadcast") || arg.equals("--broadcast")){
-                Bukkit.broadcastMessage(message);
+            if (arg.equals("-broadcast") || arg.equals("--broadcast")) {
+                broadcast = true;
+                break;
             }
+        }
+        if(broadcast){
+            Bukkit.broadcastMessage(message);
+        }else {
+            sender.sendMessage(message);
         }
         return true;
     }

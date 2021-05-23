@@ -12,6 +12,7 @@ public class GameSettings {
     public boolean doDayCycleOnPreGame = false;
     public boolean doDayCycle = true;
     public boolean showDeathMessage = true;
+    public boolean teamPvp = false;
     public int timeOnPreGame = 0;
     public int initialTime = 0;
     public World world;
