@@ -17,7 +17,7 @@ commands:
     usage: /show_settings or /show_settings -broadcast
   add_player:
     description: Agrega un jugador al juego
-    usage: /add_player nombre
+    usage: /add_player nombre o /add_player *
   add_team:
     description: Agrega un nuevo equipo
     usage: /add_team Nombre del equipo

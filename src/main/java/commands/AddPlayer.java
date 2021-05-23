@@ -16,6 +16,15 @@ public class AddPlayer implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if(args[0].equals("*")){
+            int count = 0;
+            for(Player player : Bukkit.getServer().getOnlinePlayers()){
+                GamePlayer gamePlayer = game.addPlayer(player);
+                if(gamePlayer != null) count++;
+            }
+            sender.sendMessage(ChatColor.GREEN+"Se agregaron "+ChatColor.AQUA+""+count+""+ChatColor.GREEN+" jugadores al juego");
+            return true;
+        }
         Player player = Bukkit.getServer().getPlayer(args[0]);
         GamePlayer gamePlayer = game.addPlayer(player);
         if(gamePlayer == null){

@@ -86,6 +86,7 @@ public class Game {
     }
 
     public GamePlayer getPlayer(Entity e){
+        if(e == null) return null;
         if(e instanceof Player){
             return getPlayer((Player)e);
         }

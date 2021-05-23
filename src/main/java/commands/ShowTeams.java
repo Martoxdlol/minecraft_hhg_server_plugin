@@ -18,6 +18,9 @@ public class ShowTeams implements CommandExecutor {
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         StringBuilder message = new StringBuilder();
+        message.append("-------------------------------------------\n");
+        message.append(ChatColor.AQUA).append("EQUIPOS DEL JUEGO").append(ChatColor.RESET);
+        message.append("\n-------------------------------------------\n\n");
         for(GameTeam team : game.getTeams()){
             message.append(ChatColor.RESET).append("EQUIPO: ").append(team.color).append(team.name).append("\n");
             List<GamePlayer> players = team.getMembers();
@@ -27,6 +30,14 @@ public class ShowTeams implements CommandExecutor {
             message.append("\n");
             message.append("\n");
         }
+
+        message.append("\n");
+        message.append("\n");
+        message.append(ChatColor.RESET);
+        message.append("-------------------------------------------");
+        message.append("\n");
+        message.append("\n");
+
         String finalMessage = message.toString();
 
         boolean broadcast = false;
@@ -43,6 +54,6 @@ public class ShowTeams implements CommandExecutor {
         }else {
             sender.sendMessage(finalMessage);
         }
-        return false;
+        return true;
     }
 }

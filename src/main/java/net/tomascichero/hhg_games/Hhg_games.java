@@ -1,6 +1,7 @@
 package net.tomascichero.hhg_games;
 
 import commands.*;
+import events.BukkitEventListener;
 import game.Game;
 import game.GameSettings;
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ public final class Hhg_games extends JavaPlugin {
         this.getCommand("team_color").setExecutor(new TeamColor(game));
         this.getCommand("show_teams").setExecutor(new ShowTeams(game));
         this.getCommand("add_player").setExecutor(new AddPlayer(game));
+        getServer().getPluginManager().registerEvents(new BukkitEventListener(game), this);
         game.applySettingsPreGame();
     }
 

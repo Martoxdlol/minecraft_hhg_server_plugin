@@ -21,8 +21,8 @@ public class StartGameCommandExecutor implements CommandExecutor {
                 args[i] = default_settings[i]+"="+args[i];
             }
         }
-        Bukkit.broadcastMessage(ShowSettings.getConfigMessage(game.gameSettings));
         changeGameSettings.applySettingsList(args);
+        sender.sendMessage(ShowSettings.getConfigMessage(game.gameSettings));
         return true;
     }
 }
