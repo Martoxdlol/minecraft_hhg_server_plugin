@@ -30,6 +30,12 @@ commands:
   show_teams:
     description: Muestra los equipos y los integrantes
     usage: /show_teams or /show_teams -broadcast
+  game_lobby:
+    description: Construye el lobby y teletransporta a los jugadores
+    usage: /game_lobby or /game_lobby -no_teleport -no_build -no_border
+  game_status:
+    description: Muestra el estado del juego y los eventos
+    usage: /game_status or /game_status -broadcast
   stop_game:
     description: Detiene el juego
     usage: /stop_game
