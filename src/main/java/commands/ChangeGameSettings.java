@@ -1,8 +1,9 @@
 package commands;
 
-import com.sun.tools.javac.util.Pair;
 import game.Game;
 import game.GameSettings;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.*;
 
 import java.util.Locale;
@@ -35,8 +36,8 @@ public class ChangeGameSettings implements CommandExecutor {
     int applySettingsList(String[] settingsList){
         int count = 0;
         for (String argument : settingsList){
-            Pair<String, String> setting = parseArgument(argument);
-            if(setting != null && applySetting(setting.fst, setting.snd)) count++;
+            String[] setting = parseArgument(argument);
+            if(setting != null && applySetting(setting[0], setting[1])) count++;
         }
         return count;
     }
@@ -74,6 +75,20 @@ public class ChangeGameSettings implements CommandExecutor {
                 case "pvp_on_pact":
                     gameSettings.pvpOnPact = validateBoolean(value);
                     break;
+                case "messages_interval":
+                    gameSettings.messagesInterval = validateNumber(value);
+                    break;
+                case "player_lives":
+                    gameSettings.playerLives = validateNumber(value);
+                    break;
+                case "countdown":
+                    gameSettings.countdown = validateNumber(value);
+                    break;
+                case "world":
+                    World w = Bukkit.getWorld(value);
+                    if(w == null) return false;
+                    gameSettings.world = w;
+                    break;
                 default:
                     return false;
             }
@@ -100,10 +115,10 @@ public class ChangeGameSettings implements CommandExecutor {
         throw new Exception("Invalid boolean value");
     }
 
-    public Pair<String,String> parseArgument(String argument){
+    public String[]  parseArgument(String argument){
         String[] pair = argument.split("=");
         if(pair.length == 2){
-            return new Pair<String,String>(pair[0],pair[1]);
+            return pair;
         }
         else return null;
     }

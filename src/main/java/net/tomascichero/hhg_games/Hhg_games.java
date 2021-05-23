@@ -23,6 +23,8 @@ public final class Hhg_games extends JavaPlugin {
         this.getCommand("team_color").setExecutor(new TeamColor(game));
         this.getCommand("show_teams").setExecutor(new ShowTeams(game));
         this.getCommand("add_player").setExecutor(new AddPlayer(game));
+        this.getCommand("game_lobby").setExecutor(new LobbyCommand(game.getGameWorld()));
+        this.getCommand("game_status").setExecutor(new ShowGameStatus(game));
         getServer().getPluginManager().registerEvents(new BukkitEventListener(game), this);
         game.applySettingsPreGame();
     }

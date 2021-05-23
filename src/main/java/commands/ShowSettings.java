@@ -43,6 +43,10 @@ public class ShowSettings implements CommandExecutor {
         message += ChatColor.AQUA + "\ndo_day_cycle: "+ ChatColor.GREEN + gameSettings.doDayCycle + ChatColor.GOLD +"\n(Ciclo del día en juego activado)\n";
         message += ChatColor.AQUA + "\ndo_day_cycle_on_pre_game: "+ ChatColor.GREEN + gameSettings.doDayCycleOnPreGame + ChatColor.GOLD +"\n(Ciclo del día antes de arrancar activado)\n";
         message += ChatColor.AQUA + "\nshow_advancements: "+ ChatColor.GREEN + gameSettings.showAdvancements + ChatColor.GOLD +"\n(Mostrar logros)\n";
+        message += ChatColor.AQUA + "\nmessages_interval: "+ ChatColor.GREEN + gameSettings.messagesInterval + ChatColor.GOLD +"\n(Intervalo entre mensajes)\n";
+        message += ChatColor.AQUA + "\nplayer_lives: "+ ChatColor.GREEN + gameSettings.playerLives + ChatColor.GOLD +"\n(Cantidad de vidas por jugador)\n";
+        message += ChatColor.AQUA + "\ncountdown: "+ ChatColor.GREEN + gameSettings.countdown + ChatColor.GOLD +"\n(Segundos para empezar el juego)\n";
+        message += ChatColor.AQUA + "\nworld: "+ ChatColor.GREEN + gameSettings.world.getName() + ChatColor.GOLD +"\n(Mundo en el que se juega)\n";
         return message;
     }
 

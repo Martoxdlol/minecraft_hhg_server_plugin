@@ -1,14 +1,26 @@
 package events;
 
 import game.Game;
+import game.GameEvent;
 import game.GamePlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class BukkitEventListener implements Listener {
     Game game;
@@ -20,7 +32,64 @@ public class BukkitEventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        System.out.println(event.getPlayer().getName()+" JOINED");
+        Player player = event.getPlayer();
+        System.out.println(player.getName()+" JOINED");
+        if(game.inGame()){
+            GamePlayer gamePlayer = game.getPlayer(player);
+            if(gamePlayer != null && gamePlayer.isAlive()){
+
+            }else {
+                player.setGameMode(GameMode.SPECTATOR);
+            }
+        }else {
+            player.teleport(game.gameSettings.getLobbyLocation());
+            player.setGameMode(GameMode.ADVENTURE);
+        }
+        //Collection<String> tabMenu = new ArrayList<String>();
+        //tabMenu.add(ChatColor.GOLD+"Huerto Hunger Games - official server");
+        //event.setJoinMessage("");
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event){
+        Player player = event.getEntity().getPlayer();
+        Player killer = player.getKiller();
+        GamePlayer gamePlayer = game.getPlayer(player);
+        GamePlayer gameKiller = game.getPlayer(killer);
+        EntityDamageEvent damageCause = player.getLastDamageCause();
+        if(gameKiller != null && gamePlayer != null){
+            //damageCause.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+            gameKiller.kills += 1;
+            game.status.pushEvent(new GameEvent(GameEvent.PLAYER_KILL, gamePlayer, gameKiller));
+            game.status.showLastEvent();
+        }
+        if(gamePlayer != null){
+            gamePlayer.player.setBedSpawnLocation(gamePlayer.player.getLocation());
+            if(gamePlayer.getLives() == 0){
+                gamePlayer.kill();
+                if(gameKiller != null){
+                    game.status.pushEvent(new GameEvent(GameEvent.PLAYER_DIED, gamePlayer, gameKiller));
+                }else {
+                    game.status.pushEvent(new GameEvent(GameEvent.PLAYER_DIED, gamePlayer, damageCause.getCause()));
+                }
+                game.status.showLastEvent();
+            }else{
+                gamePlayer.removeLive(1);
+            }
+            if(!gamePlayer.isAlive()){
+                gamePlayer.player.setGameMode(GameMode.SPECTATOR);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event){
+        Player player = event.getPlayer();
+        GamePlayer gamePlayer = game.getPlayer(player);
+        if(gamePlayer != null){
+            gamePlayer.player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 150 + 5 * 20 +1, 10));
+            gamePlayer.player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 150 + 4 * 20 +1, 10));
+        }
     }
 
     @EventHandler
@@ -53,7 +122,6 @@ public class BukkitEventListener implements Listener {
             }
         }
     }
-
 
     @EventHandler
     public void onTestEntityDamageByEntity(EntityDamageByEntityEvent event)
