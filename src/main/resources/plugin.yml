@@ -1,0 +1,32 @@
+name: Hhg_games
+version: ${project.version}
+main: net.tomascichero.hhg_games.Hhg_games
+api-version: 1.16
+prefix: HHG
+authors: [ martoxdlol ]
+description: Huerto Hunger Games official plugin
+commands:
+  start_game:
+    description: Inicia la partida con parametrso báscios
+    usage: /start_game [duracion total] [duracion pacto] [tamaño grande] [tamaño final]
+  apply_settings:
+    description: "Cambia la configuracion del juego. Ej: /apply_settings initial_size=1000"
+    usage: /apply_settings setting_name=setting_value
+  show_settings:
+    description: "Muestra las configuraciónes de la partida. (usar -broadcast para mostrarle a todos)"
+    usage: /show_settings or /show_settings -broadcast
+  stop_game:
+    description: Detiene el juego
+    usage: /stop_game
+  add_player:
+    description: Agrega un jugador a la partida unque ya haya iniciado
+    usage: /add_player [nombre]
+  revive:
+    description: Revive un jugador muerto en la partida
+    usage: /revive [nombre]
+  dead_coords:
+    description: Obtiene las coordenaddas de la muerte de un jugador
+    usage: /dead_coords [nombre]
+  wb:
+    description: Cambia el tamaño de la world border
+    usage: /wb [tamaño]
