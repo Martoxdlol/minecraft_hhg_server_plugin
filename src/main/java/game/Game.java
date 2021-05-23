@@ -41,6 +41,9 @@ public class Game {
         startLoop();
         System.out.println("INICIANDO JUEGO");
         Bukkit.broadcastMessage("El juego va a comenzar!");
+        for(GamePlayer player : players){
+            player.setLives(gameSettings.playerLives);
+        }
     }
 
     void startLoop(){
@@ -93,6 +96,17 @@ public class Game {
         status.pushEvent(new GameEvent(GameEvent.DEATHMATCH_STARTED));
         Bukkit.broadcastMessage(ChatColor.GOLD+"Arrancó el deathmatch!");
         applySettingsInGame();
+    }
+
+    void gameEnded(){
+        Bukkit.broadcastMessage(ChatColor.GREEN+"Terminó la partida");
+    }
+
+    public void checkWin(){
+        if(status.winnerAction()){
+            gameState = 4;
+            gameEnded();
+        }
     }
 
     boolean isMinuteChange(){

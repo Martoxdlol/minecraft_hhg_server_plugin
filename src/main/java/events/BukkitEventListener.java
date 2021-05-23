@@ -45,6 +45,7 @@ public class BukkitEventListener implements Listener {
             player.teleport(game.gameSettings.getLobbyLocation());
             player.setGameMode(GameMode.ADVENTURE);
         }
+        game.status.setPlayersDisplayNames();
         //Collection<String> tabMenu = new ArrayList<String>();
         //tabMenu.add(ChatColor.GOLD+"Huerto Hunger Games - official server");
         //event.setJoinMessage("");
@@ -80,6 +81,7 @@ public class BukkitEventListener implements Listener {
                 gamePlayer.player.setGameMode(GameMode.SPECTATOR);
             }
         }
+        game.checkWin();
     }
 
     @EventHandler

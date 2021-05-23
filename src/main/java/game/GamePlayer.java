@@ -9,7 +9,7 @@ public class GamePlayer {
     Game game;
     public GameTeam team;
 
-    private int lives;
+    private int lives = 1;
 
     public int kills = 0;
 
