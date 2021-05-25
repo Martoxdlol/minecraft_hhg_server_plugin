@@ -12,22 +12,10 @@ public class LobbyCommand implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        boolean notBuild = false;
-        boolean notTeleport = false;
-        boolean notBorder = false;
-        for(String arg : args){
-            switch (arg) {
-                case "no_teleport":
-                    notTeleport = true;
-                    break;
-                case "no_build":
-                    notBuild = true;
-                    break;
-                case "no_border":
-                    notBorder = true;
-                    break;
-            }
-        }
+        boolean notBuild = CommandsUtil.hasOption(args,"no_build");
+        boolean notTeleport = CommandsUtil.hasOption(args,"no_teleport");
+        boolean notBorder = CommandsUtil.hasOption(args,"no_border");
+        boolean notSetGameModes = CommandsUtil.hasOption(args,"no_gamemodes");
         if(!notBuild){
             gameWorld.setLobbyPlatform();
         }
@@ -37,6 +25,10 @@ public class LobbyCommand implements CommandExecutor {
         if(!notBorder){
             gameWorld.setLobbyBorder();
         }
+        if(!notSetGameModes){
+            gameWorld.setLobbyGameModes();
+        }
+
         return true;
     }
 }

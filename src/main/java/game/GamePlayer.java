@@ -1,6 +1,9 @@
 package game;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -12,6 +15,12 @@ public class GamePlayer {
     private int lives = 1;
 
     public int kills = 0;
+
+    public ItemStack[] lastInventoryContent;
+
+    public float lastXp;
+
+    public Location lastDeathLocation;
 
     public GamePlayer(Game game, Player player){
         constructor(player, game);
@@ -33,6 +42,13 @@ public class GamePlayer {
     public void removeLive(int removeQuantity){
         if(lives - removeQuantity > 0 && removeQuantity > 0){
             lives -= removeQuantity;
+        }
+    }
+
+    public void killOnce(){
+        lives--;
+        if(lives == 0){
+            kill();
         }
     }
 

@@ -71,15 +71,33 @@ public class GameStatus {
         for(Player player : players){
             GamePlayer gamePlayer = game.getPlayer(player);
             if(gamePlayer != null){
-                if(gamePlayer.isAlive()) player.setDisplayName(ChatColor.GREEN+"[Vivo] "+player.getName()+ChatColor.RESET);
-                else player.setDisplayName(ChatColor.RED+"[Muerto] "+player.getName()+player.getName()+ChatColor.RESET);
+                if(game.inGame()){
+                    if(gamePlayer.isAlive()) player.setDisplayName(ChatColor.GREEN+"[Vivo] "+player.getName()+ChatColor.RESET);
+                    else player.setDisplayName(ChatColor.RED+"[Muerto] "+player.getName()+ChatColor.RESET);
+                }else {
+                    player.setDisplayName(ChatColor.AQUA+"[Player] "+player.getName()+ChatColor.RESET);
+                }
             }else{
-                player.setDisplayName(ChatColor.DARK_GRAY+"[Espectador] "+player.getName()+player.getName()+ChatColor.RESET);
+                if(game.inGame()){
+                    player.setDisplayName(ChatColor.GRAY+"[Espectador] "+player.getName()+ChatColor.RESET);
+                }else {
+                    player.setDisplayName(ChatColor.DARK_PURPLE+""+player.getName()+ChatColor.RESET);
+                }
             }
         }
     }
 
+    public GameEvent getLastPlayerDeath(){
+        for (int i = events.size()-1; i >= 0; i--){
+            if(events.get(i).type.equals(GameEvent.PLAYER_DIED)){
+                return events.get(i);
+            }
+        }
+        return null;
+    }
+
     public boolean winnerAction(){
+        if(game.inEnd()) return false;
         List<GameTeam> aliveTeams = teamsAlive();
         if(aliveTeams.size() == 1){
             GameTeam winnerTeam = aliveTeams.get(0);
@@ -95,6 +113,39 @@ public class GameStatus {
             return true;
         }
         return false;
+    }
+
+    public void resetLastDeathEvents(GamePlayer player){
+        int i = events.size()-1;
+        boolean killRemoved = false;
+        boolean deathRemoved = false;
+        while (i >= 0){
+            GameEvent event = events.get(i);
+            if(!deathRemoved && event.type.equals(GameEvent.PLAYER_DIED) && event.affectedPlayer.player.getName().equals(player.player.getName())){
+                events.remove(i);
+                deathRemoved = true;
+            }else if(!killRemoved && event.type.equals(GameEvent.PLAYER_KILL) && event.affectedPlayer.player.getName().equals(player.player.getName())){
+                events.remove(i);
+                killRemoved = true;
+            }else{
+                i--;
+            }
+            if (killRemoved && deathRemoved){
+                break;
+            }
+        }
+    }
+
+    public void removeEndEvents(){
+        int i = 0;
+        while (i < events.size()){
+            GameEvent event = events.get(i);
+            if(event.type.equals(GameEvent.PLAYER_WIN) || event.type.equals(GameEvent.TEAM_WIN) || event.type.equals(GameEvent.GAME_ENDED)){
+                events.remove(i);
+            }else {
+                i++;
+            }
+        }
     }
 }
 

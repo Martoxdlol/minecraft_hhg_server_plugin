@@ -1,9 +1,6 @@
 package game;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 public class GameWorld {
@@ -19,6 +16,12 @@ public class GameWorld {
     public void teleportToLobby(){
         for(Player player : Bukkit.getServer().getOnlinePlayers()){
             player.teleport(game.gameSettings.getLobbyLocation());
+        }
+    }
+
+    public void setLobbyGameModes(){
+        for(Player player : Bukkit.getServer().getOnlinePlayers()){
+            player.setGameMode(GameMode.ADVENTURE);
         }
     }
 
@@ -39,6 +42,10 @@ public class GameWorld {
             }
         }
 
+    }
+
+    public static String locationToText(Location location){
+        return "Mundo: "+location.getWorld().getName()+", X: "+Math.round(location.getX())+", Y: "+Math.round(location.getY())+", Z: "+Math.round(location.getZ());
     }
 
     public void breakLobbyPlatform(){

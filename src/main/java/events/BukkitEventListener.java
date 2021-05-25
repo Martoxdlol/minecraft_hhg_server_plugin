@@ -6,6 +6,7 @@ import game.GamePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,6 +17,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -34,8 +37,13 @@ public class BukkitEventListener implements Listener {
     {
         Player player = event.getPlayer();
         System.out.println(player.getName()+" JOINED");
+
         if(game.inGame()){
             GamePlayer gamePlayer = game.getPlayer(player);
+            System.out.println("IN GAME");
+            System.out.println(gamePlayer);
+            System.out.println(gamePlayer.isAlive());
+
             if(gamePlayer != null && gamePlayer.isAlive()){
 
             }else {
@@ -58,20 +66,23 @@ public class BukkitEventListener implements Listener {
         GamePlayer gamePlayer = game.getPlayer(player);
         GamePlayer gameKiller = game.getPlayer(killer);
         EntityDamageEvent damageCause = player.getLastDamageCause();
-        if(gameKiller != null && gamePlayer != null){
+        Biome biome = player.getLocation().getBlock().getBiome();
+        if(gameKiller != null && gamePlayer != null && gameKiller.isAlive()){
             //damageCause.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK);
             gameKiller.kills += 1;
             game.status.pushEvent(new GameEvent(GameEvent.PLAYER_KILL, gamePlayer, gameKiller));
             game.status.showLastEvent();
         }
         if(gamePlayer != null){
-            gamePlayer.player.setBedSpawnLocation(gamePlayer.player.getLocation());
-            if(gamePlayer.getLives() == 0){
-                gamePlayer.kill();
+            gamePlayer.lastDeathLocation = gamePlayer.player.getLocation();
+            gamePlayer.lastInventoryContent = gamePlayer.player.getInventory().getContents();
+            gamePlayer.lastXp = gamePlayer.player.getExp();
+            gamePlayer.killOnce();
+            if(!gamePlayer.isAlive()){
                 if(gameKiller != null){
-                    game.status.pushEvent(new GameEvent(GameEvent.PLAYER_DIED, gamePlayer, gameKiller));
+                    game.status.pushEvent(new GameEvent(GameEvent.PLAYER_DIED, gamePlayer, gameKiller, biome));
                 }else {
-                    game.status.pushEvent(new GameEvent(GameEvent.PLAYER_DIED, gamePlayer, damageCause.getCause()));
+                    game.status.pushEvent(new GameEvent(GameEvent.PLAYER_DIED, gamePlayer, damageCause.getCause(), biome));
                 }
                 game.status.showLastEvent();
             }else{
@@ -81,6 +92,7 @@ public class BukkitEventListener implements Listener {
                 gamePlayer.player.setGameMode(GameMode.SPECTATOR);
             }
         }
+        game.status.setPlayersDisplayNames();
         game.checkWin();
     }
 

@@ -30,9 +30,6 @@ public class ShowTeams implements CommandExecutor {
             message.append("\n");
             message.append("\n");
         }
-
-        message.append("\n");
-        message.append("\n");
         message.append(ChatColor.RESET);
         message.append("-------------------------------------------");
         message.append("\n");
@@ -40,20 +37,16 @@ public class ShowTeams implements CommandExecutor {
 
         String finalMessage = message.toString();
 
-        boolean broadcast = false;
-
-        for(String arg : args){
-            if (arg.equals("-broadcast") || arg.equals("--broadcast")) {
-                broadcast = true;
-                break;
-            }
-        }
+        boolean broadcast = CommandsUtil.hasOption(args,"broadcast");
 
         if(broadcast){
             Bukkit.broadcastMessage(finalMessage);
         }else {
             sender.sendMessage(finalMessage);
         }
+
+        game.status.setPlayersDisplayNames();
+
         return true;
     }
 }

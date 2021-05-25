@@ -1,6 +1,5 @@
 package commands;
 import game.Game;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 
@@ -17,11 +16,13 @@ public class StartGameCommandExecutor implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(game.inGame()){
             sender.sendMessage(ChatColor.RED+"El juego ya esta iniciado");
-            return false;
+            sender.sendMessage(ChatColor.RESET+"Usá /reset_game y luego inicie un nuevo juego");
+            return true;
         }
+        boolean addAll = !CommandsUtil.hasOption(args,"no_add_playersta");
         if(game.getPlayers().isEmpty()){
-            sender.sendMessage(ChatColor.RED+"Agrega jugadores primero: "+ChatColor.GOLD+"/add_player nombre"+ChatColor.RED+" o "+ChatColor.GOLD+"/add_player *");
-            return false;
+            if(addAll) AddPlayer.addAll(game);
+            //sender.sendMessage(ChatColor.RED+"Agrega jugadores primero: "+ChatColor.GOLD+"/add_player nombre"+ChatColor.RED+" o "+ChatColor.GOLD+"/add_player *");
         }
         ChangeGameSettings changeGameSettings = new ChangeGameSettings(game);
         if(args.length < 4) return false;
@@ -31,6 +32,7 @@ public class StartGameCommandExecutor implements CommandExecutor {
             }
         }
         changeGameSettings.applySettingsList(args);
+
         game.start();
         return true;
     }

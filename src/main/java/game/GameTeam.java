@@ -22,4 +22,8 @@ public class GameTeam {
         }
         return list;
     }
+
+    public String getDisplayName(){
+        return color+name+ChatColor.RESET;
+    }
 }

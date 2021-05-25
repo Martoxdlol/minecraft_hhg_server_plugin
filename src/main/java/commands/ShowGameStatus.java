@@ -16,25 +16,36 @@ public class ShowGameStatus implements CommandExecutor {
         this.game = game;
     }
 
+    static String[] gameStateCodes = {"Listo para iniciar","En pacto","En juego","En deathmatch","Finalizado"};
+
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         GameStatus status = game.status;
-        boolean broadcast = false;
+
         String message = "";
-
+        message += "-------------------------------------------\n";
+        message += (ChatColor.AQUA)+("ESTADO DEL JUEGO") + (ChatColor.RESET);
+        message += "\n-------------------------------------------\n";
         message += "Equipos vivos "+ ChatColor.GREEN+status.teamsAlive().size()+ChatColor.RESET+"\n";
-        message += "Jugadores vivos "+ ChatColor.GREEN+status.alivePlayers().size()+"\n";
+        message += "Jugadores vivos "+ ChatColor.GREEN+status.alivePlayers().size()+ChatColor.RESET+"\n";
+        message += "Jugadores totales "+ ChatColor.GREEN+game.getPlayers().size()+ChatColor.RESET+"\n";
+        message += "Estado: "+ChatColor.GREEN+gameStateCodes[game.getGameState()]+ChatColor.RESET+"\n";
+        message += "Tiempo: "+ChatColor.GREEN+GameEvent.getTime(game.getTickNum())+ChatColor.RESET+"\n";
 
-        for(GameEvent event : game.status.getEvents()){
-            message += "\n"+event.getMessage();
-        }
 
-        for(String arg : args){
-            switch (arg) {
-                case "-broadcast":
-                    broadcast = true;
-                    break;
+
+        boolean hideEvents = CommandsUtil.hasOption(args, "hide_events");
+
+        if(!hideEvents){
+            message += "\n-------------------------------------------\n";
+            message += (ChatColor.AQUA)+("EVENTOS DEL JUEGO") + (ChatColor.RESET);
+            message += "\n-------------------------------------------\n";
+            for(GameEvent event : game.status.getEvents()){
+                message += "\n"+event.getMessage();
             }
         }
+
+
+        boolean broadcast = CommandsUtil.hasOption(args,"broadcast");
         if(broadcast){
             Bukkit.broadcastMessage(message);
         }else{

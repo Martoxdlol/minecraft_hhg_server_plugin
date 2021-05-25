@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
@@ -21,15 +22,20 @@ public class Game {
     public static final int ticksPerSecond = 20;
     public GameSettings gameSettings;
     private int actualTime = -1;
-    private int tickNum = ticksPerSecond * -5;
+    private int tickNum = 0;
     private int gameState = 0;
     private List<GamePlayer> players = new ArrayList<GamePlayer>();
     private List<GameTeam> teams = new ArrayList<GameTeam>();
     public GameStatus status = new GameStatus(this);
     private GameWorld gameWorld;
+    BukkitTask loop;
     public Game(GameSettings gameSettings){
         this.gameSettings = gameSettings;
         this.gameWorld = new GameWorld(this);
+    }
+
+    public int getGameState() {
+        return gameState;
     }
 
     public GameWorld getGameWorld() {
@@ -47,25 +53,49 @@ public class Game {
     }
 
     void startLoop(){
-        new BukkitRunnable(){
+        loop = new BukkitRunnable(){
             @Override
             public void run(){
-                if(tickNum == 0){
-                    gameState = 1;
-                    gameStarted();
-                }else
-                if(isMinuteChange() && getMinute() == gameSettings.pactDuration){
-                    gameState = 2;
-                    pactEnded();
-                }else
-                if(isMinuteChange() && getMinute() == gameSettings.totalDuration){
-                    gameState = 3;
-                    deathMatchStarted();
+                if(!inEnd()){
+                    testSetStateLoop();
                 }
                 tick();
                 tickNum++;
             }
         }.runTaskTimer(Bukkit.getPluginManager().getPlugin("HuertoHungerGames"), 0L, 1L);
+    }
+
+    public void testSetStateLoop(){
+        if(tickNum == 0){
+            gameState = 1;
+            gameStarted();
+        }else
+        if(isMinuteChange() && getMinute() == gameSettings.pactDuration){
+            gameState = 2;
+            pactEnded();
+        }else
+        if(isMinuteChange() && getMinute() == gameSettings.totalDuration){
+            gameState = 3;
+            deathMatchStarted();
+        }
+        if(isMinuteChange()){
+            status.setPlayersDisplayNames();
+        }
+    }
+
+    public void testSetState(){
+        if(tickNum >= 0){
+            gameState = 1;
+            gameStarted();
+        }else
+        if(getMinute() >= gameSettings.pactDuration){
+            gameState = 2;
+            pactEnded();
+        }else
+        if(getMinute() >= gameSettings.totalDuration){
+            gameState = 3;
+            deathMatchStarted();
+        }
     }
 
     void tick(){
@@ -105,6 +135,7 @@ public class Game {
     public void checkWin(){
         if(status.winnerAction()){
             gameState = 4;
+            loop.cancel();
             gameEnded();
         }
     }
@@ -119,24 +150,48 @@ public class Game {
 
     void gameStartedPlayerEffects(){
         for(GamePlayer player : players){
-            player.player.setGameMode(GameMode.SURVIVAL);
-            player.player.getInventory().clear();
-            //Clear potion effects
-            for(PotionEffect effect : player.player.getActivePotionEffects())
-            {
-                player.player.removePotionEffect(effect.getType());
-            }
-            player.player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 150 + 5 * 20 +1, 10));
-            player.player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 150, 10));
-            player.player.setHealth(20);
-            //Clear advancements
-            Iterator<Advancement> iterator = Bukkit.getServer().advancementIterator();
-            while (iterator.hasNext())
-            {
-                AdvancementProgress progress = player.player.getAdvancementProgress(iterator.next());
-                for (String criteria : progress.getAwardedCriteria())
-                    progress.revokeCriteria(criteria);
-            }
+            applyPlayerEffects(player);
+        }
+    }
+
+    public void stop(){
+        if(loop != null){
+            loop.cancel();
+        }
+        gameState = 4;
+    }
+
+    public boolean unFinish(){
+        if(!inEnd()) return false;
+        if(players.size() < 2) return false;
+        if(loop != null && !loop.isCancelled()) loop.cancel();
+        status.removeEndEvents();
+        status.setPlayersDisplayNames();
+        startLoop();
+        applySettingsInGame();
+        testSetState();
+        return true;
+    }
+
+    public void applyPlayerEffects(GamePlayer player){
+        player.player.setGameMode(GameMode.SURVIVAL);
+        player.player.getInventory().clear();
+        //Clear potion effects
+        for(PotionEffect effect : player.player.getActivePotionEffects())
+        {
+            player.player.removePotionEffect(effect.getType());
+        }
+        player.player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 150 + 5 * 20 +1, 10));
+        player.player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 150, 10));
+        player.player.setHealth(20);
+        player.player.setExp(0);
+        //Clear advancements
+        Iterator<Advancement> iterator = Bukkit.getServer().advancementIterator();
+        while (iterator.hasNext())
+        {
+            AdvancementProgress progress = player.player.getAdvancementProgress(iterator.next());
+            for (String criteria : progress.getAwardedCriteria())
+                progress.revokeCriteria(criteria);
         }
     }
 
@@ -152,15 +207,15 @@ public class Game {
         }
         if(inPact()) {
             time = gameSettings.pactDuration - getMinute();
-            Bukkit.broadcastMessage(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" de pacto!");
+            Bukkit.broadcastMessage(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos de pacto!");
         }
         else if(inPve()) {
             time = gameSettings.totalDuration - getMinute();
-            Bukkit.broadcastMessage(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" antes del deathmatch!");
+            Bukkit.broadcastMessage(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos antes del deathmatch!");
         }
         else if(inDeathMatch()) {
             time = getMinute() - gameSettings.totalDuration;
-            Bukkit.broadcastMessage(ChatColor.GOLD+"Van "+ChatColor.AQUA+time+ChatColor.GOLD+" del deathmatch!");
+            Bukkit.broadcastMessage(ChatColor.GOLD+"Van "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos del deathmatch!");
         }
     }
 
@@ -176,7 +231,11 @@ public class Game {
         GameTeam newTeam = addTeam(teamName);
         if(newTeam == null) newTeam = getTeam(teamName);
         newPlayer.team = newTeam;
+        newPlayer.setLives(gameSettings.playerLives);
         players.add(newPlayer);
+        status.setPlayersDisplayNames();
+        GameEvent joinedEvent = new GameEvent(GameEvent.PLAYER_JOINED, newPlayer);
+        status.pushEvent(joinedEvent);
         return newPlayer;
     }
 
@@ -219,7 +278,7 @@ public class Game {
     public GamePlayer getPlayer(Player player){
         if(player == null) return null;
         for(GamePlayer gamePlayer : players){
-            if(gamePlayer.player.getUniqueId() == player.getUniqueId()){
+            if(gamePlayer.player.getName().equals(player.getName())){
                 return gamePlayer;
             }
         }
@@ -276,6 +335,7 @@ public class Game {
         gameSettings.world.setGameRule(GameRule.SHOW_DEATH_MESSAGES, gameSettings.showDeathMessage);
         gameSettings.world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, gameSettings.doDayCycle);
         gameSettings.world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
+        gameSettings.world.setDifficulty(Difficulty.HARD);
         WorldBorder worldBorder = gameSettings.world.getWorldBorder();
         worldBorder.setCenter(0, 0);
         if(!gameSettings.doDayCycle){
@@ -286,5 +346,16 @@ public class Game {
         }else {
             worldBorder.setSize(gameSettings.finalSize);
         }
+    }
+
+    public void reset(){
+        stop();
+        actualTime = -1;
+        tickNum = 0;
+        gameState = 0;
+        players = new ArrayList<GamePlayer>();
+        teams = new ArrayList<GameTeam>();
+        status = new GameStatus(this);
+        status.setPlayersDisplayNames();
     }
 }
