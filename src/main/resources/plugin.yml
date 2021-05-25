@@ -12,9 +12,6 @@ commands:
   apply_settings:
     description: "Cambia la configuracion del juego. Ej: /apply_settings initial_size=1000"
     usage: /apply_settings setting_name=setting_value
-  show_settings:
-    description: "Muestra las configuraciónes de la partida. (usar -broadcast para mostrarle a todos)"
-    usage: /show_settings or /show_settings -broadcast
   add_player:
     description: Agrega un jugador al juego
     usage: /add_player nombre o /add_player *
@@ -27,25 +24,27 @@ commands:
   team_color:
     description: Cambia el color del equipo
     usage: /team_color color nombre del equipo
-  show_teams:
-    description: Muestra los equipos y los integrantes
-    usage: /show_teams or /show_teams -broadcast
   game_lobby:
     description: Construye el lobby y teletransporta a los jugadores
-    usage: /game_lobby or /game_lobby -no_teleport -no_build -no_border
+    usage: /game_lobby or /game_lobby -no_teleport -no_build -no_border -no_gamemodes
   game_status:
     description: Muestra el estado del juego y los eventos
     usage: /game_status or /game_status -broadcast
-  stop_game:
-    description: Detiene el juego
-    usage: /stop_game
-
+  show_players:
+    description: Muestra los jugadores
+    usage: /show_players or /show_players -broadcast
+  show_teams:
+    description: Muestra los equipos y los integrantes
+    usage: /show_teams or /show_teams -broadcast
+  show_settings:
+    description: "Muestra las configuraciónes de la partida. (usar -broadcast para mostrarle a todos)"
+    usage: /show_settings or /show_settings -broadcast
+  reset_game:
+    description: Resetea y cancela el juego
+    usage: /reset_game
   revive:
-    description: Revive un jugador muerto en la partida
-    usage: /revive [nombre]
-  dead_coords:
-    description: Obtiene las coordenaddas de la muerte de un jugador
-    usage: /dead_coords [nombre]
-  wb:
-    description: Cambia el tamaño de la world border
-    usage: /wb [tamaño]
+    description: Revive a un jugador. Con -inventory le devuelve el inventario
+    usage: /revive nombre o /revive nombre -inventory
+  un_finish:
+    description: Continua el juego si se terminó por error
+    usage: /un_finish
