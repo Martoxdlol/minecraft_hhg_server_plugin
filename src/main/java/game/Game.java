@@ -28,6 +28,7 @@ public class Game {
     private List<GameTeam> teams = new ArrayList<GameTeam>();
     public GameStatus status = new GameStatus(this);
     private GameWorld gameWorld;
+    public GameScoreboard gameScoreboard = new GameScoreboard(this);
     BukkitTask loop;
     public Game(GameSettings gameSettings){
         this.gameSettings = gameSettings;
@@ -84,9 +85,8 @@ public class Game {
     }
 
     public void testSetState(){
-        if(tickNum >= 0){
+        if(getMinute() < gameSettings.pactDuration){
             gameState = 1;
-            gameStarted();
         }else
         if(getMinute() >= gameSettings.pactDuration){
             gameState = 2;
@@ -101,8 +101,12 @@ public class Game {
     void tick(){
         if(isMinuteChange() && (getMinute() % gameSettings.messagesInterval == 0 || getMinute() >= gameSettings.totalDuration-5 && getMinute() <= gameSettings.totalDuration)){
             sendTimeLeftMessage();
+            gameScoreboard.updateStatusList();
         }else if(tickNum < 0 && isSecondChange()){
             sendTimeLeftMessage();
+        }
+        if(isMinuteChange()){
+            gameScoreboard.updateStatusList();
         }
     }
 
@@ -199,24 +203,32 @@ public class Game {
         return tickNum / ticksPerSecond;
     }
 
-    void sendTimeLeftMessage(){
+    String getTimeLeftMessage(){
         int time = 0;
         if(!inGame()){
             time = -getSecond();
-            Bukkit.broadcastMessage(ChatColor.GOLD+"El juego empieza en "+ChatColor.AQUA+time+ChatColor.GOLD+" segundos!");
+            return(ChatColor.GOLD+"El juego empieza en "+ChatColor.AQUA+time+ChatColor.GOLD+" segundos!");
         }
         if(inPact()) {
             time = gameSettings.pactDuration - getMinute();
-            Bukkit.broadcastMessage(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos de pacto!");
+            return(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos de pacto!");
         }
         else if(inPve()) {
             time = gameSettings.totalDuration - getMinute();
-            Bukkit.broadcastMessage(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos antes del deathmatch!");
+            return(ChatColor.GOLD+"Quedan "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos antes del deathmatch!");
         }
         else if(inDeathMatch()) {
             time = getMinute() - gameSettings.totalDuration;
-            Bukkit.broadcastMessage(ChatColor.GOLD+"Van "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos del deathmatch!");
+            return(ChatColor.GOLD+"Van "+ChatColor.AQUA+time+ChatColor.GOLD+" minutos del deathmatch!");
+        }else if(inEnd()){
+            return ChatColor.BLUE+"El juego finalizó";
         }
+        return ChatColor.BLUE+"Esperando para iniciar";
+    }
+
+    void sendTimeLeftMessage(){
+        int time = 0;
+        Bukkit.broadcastMessage(getTimeLeftMessage());
     }
 
     int getMinute(){
@@ -311,6 +323,14 @@ public class Game {
 
     public List<GameTeam> getTeams() {
         return teams;
+    }
+
+    public List<GameTeam> getNonEmptyTeams() {
+        List<GameTeam> list = new ArrayList<GameTeam>();
+        for (GameTeam team : teams){
+            if(!team.getMembers().isEmpty()) list.add(team);
+        }
+        return list;
     }
 
     public void applySettings(){

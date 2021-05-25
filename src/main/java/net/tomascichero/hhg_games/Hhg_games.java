@@ -34,6 +34,7 @@ public final class Hhg_games extends JavaPlugin {
         game.applySettingsPreGame();
         game.getGameWorld().setLobbyBorder();
         game.getGameWorld().setLobbyPlatform();
+        game.gameScoreboard.updateStatusList();
         //game.getGameWorld().teleportToLobby();
     }
 

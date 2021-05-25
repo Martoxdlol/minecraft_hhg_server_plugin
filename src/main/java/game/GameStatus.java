@@ -46,10 +46,21 @@ public class GameStatus {
         return teams;
     }
 
+    public int getPlayerKills(GamePlayer player){
+        int count = 0;
+        for(GameEvent event : events){
+            if(event.type.equals(GameEvent.PLAYER_KILL) && event.affectivePlayer.player.getName().equals(player.player.getName())){
+                count++;
+            }
+        }
+        return count;
+    }
+
     public void pushEvent(GameEvent event){
         event.tick = game.getTickNum();
         game.status.setPlayersDisplayNames();
         events.add(event);
+        game.gameScoreboard.updateStatusList();
     }
 
     public List<GameEvent> getEvents() {
@@ -64,20 +75,8 @@ public class GameStatus {
 
 
     public void setPlayersDisplayNames(){
-        _setPlayersDisplayNames(Bukkit.getServer().getOnlinePlayers());
-    }
-
-    private void _setPlayersDisplayNames(Collection<? extends Player> players){
-        for(Player player : players){
-            GamePlayer gamePlayer = game.getPlayer(player);
-            if(gamePlayer != null){
-                if(game.inGame()){
-                    if(gamePlayer.isAlive()) player.setDisplayName(ChatColor.GREEN+"[Vivo] "+player.getName()+ChatColor.RESET);
-                    else player.setDisplayName(ChatColor.RED+"[Muerto] "+player.getName()+ChatColor.RESET);
-                }else {
-                    player.setDisplayName(ChatColor.AQUA+"[Player] "+player.getName()+ChatColor.RESET);
-                }
-            }else{
+        for(Player player : Bukkit.getServer().getOnlinePlayers()){
+            if(game.getPlayer(player) == null){
                 if(game.inGame()){
                     player.setDisplayName(ChatColor.GRAY+"[Espectador] "+player.getName()+ChatColor.RESET);
                 }else {
@@ -85,6 +84,17 @@ public class GameStatus {
                 }
             }
         }
+        for(GamePlayer gamePlayer : game.getPlayers()){
+            Player player = gamePlayer.player;
+            if(game.inGame()){
+                if(gamePlayer.isAlive()) player.setDisplayName(ChatColor.GREEN+"[Vivo] "+player.getName()+ChatColor.RESET);
+                else player.setDisplayName(ChatColor.RED+"[Muerto] "+player.getName()+ChatColor.RESET);
+            }else {
+                player.setDisplayName(ChatColor.AQUA+"[Player] "+player.getName()+ChatColor.RESET);
+            }
+        }
+        game.gameScoreboard.updateStatusList();
+        game.gameScoreboard.applyToPlayers();
     }
 
     public GameEvent getLastPlayerDeath(){

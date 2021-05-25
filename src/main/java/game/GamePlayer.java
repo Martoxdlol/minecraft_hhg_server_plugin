@@ -35,6 +35,10 @@ public class GamePlayer {
         this.game = game;
     }
 
+    public int getKills(){
+        return game.status.getPlayerKills(this);
+    }
+
     public boolean isAlive(){
         return lives > 0;
     }

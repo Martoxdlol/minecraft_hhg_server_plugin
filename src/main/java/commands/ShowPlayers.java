@@ -32,7 +32,8 @@ public class ShowPlayers implements CommandExecutor {
             message.append(player.player.getDisplayName()).append(ChatColor.RESET).append("\n");
             message.append(" - vidas: ").append(ChatColor.GREEN).append(player.getLives()).append(ChatColor.RESET).append("\n");
             message.append(" - equipo: ").append(ChatColor.GREEN).append(player.team.getDisplayName()).append(ChatColor.RESET).append("\n");
-           if(deathLocation && player.lastDeathLocation != null ){
+            message.append(" - kills: ").append(ChatColor.RED).append(player.getKills()).append(ChatColor.RESET).append("\n");
+            if(deathLocation && player.lastDeathLocation != null ){
                message.append(" - pos muerte: ").append(ChatColor.BLUE).append(GameWorld.locationToText(player.lastDeathLocation)).append(ChatColor.RESET).append("\n");
            }
         }

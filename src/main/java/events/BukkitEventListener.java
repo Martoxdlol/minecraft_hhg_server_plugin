@@ -88,9 +88,6 @@ public class BukkitEventListener implements Listener {
             }else{
                 gamePlayer.removeLive(1);
             }
-            if(!gamePlayer.isAlive()){
-                gamePlayer.player.setGameMode(GameMode.SPECTATOR);
-            }
         }
         game.status.setPlayersDisplayNames();
         game.checkWin();
@@ -103,6 +100,9 @@ public class BukkitEventListener implements Listener {
         if(gamePlayer != null){
             gamePlayer.player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 150 + 5 * 20 +1, 10));
             gamePlayer.player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 150 + 4 * 20 +1, 10));
+            if(game.inGame() && !gamePlayer.isAlive()){
+                gamePlayer.player.setGameMode(GameMode.SPECTATOR);
+            }
         }
     }
 
